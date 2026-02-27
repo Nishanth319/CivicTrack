@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>CivicConnect – Citizen Portal</title>
+  <link rel="stylesheet" href="style.css" />
+  <!-- Font for exactly matching the modern aesthetic -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+  <!-- AUTHENTICATION VIEW -->
+  <div id="authView" class="auth-container">
+    <div class="auth-box">
+      <div class="auth-logo">🏛️</div>
+      <h2 class="auth-title">Civic<span>Connect</span></h2>
+      <p class="auth-subtitle">Citizen Issue Management System</p>
+
+      <!-- Login Form -->
+      <div id="loginForm" class="auth-form">
+        <div class="input-group">
+          <label>EMAIL ADDRESS</label>
+          <input type="email" id="l_email" placeholder="Enter your email" />
+        </div>
+
+        <div class="input-group">
+          <label>PASSWORD</label>
+          <input type="password" id="l_password" placeholder="Enter your password" />
+        </div>
+
+        <button onclick="login()" class="primary-btn auth-btn">Sign In &rarr;</button>
+        <p class="auth-link">No account? <span onclick="toggleAuth('register')">Register here</span></p>
+      </div>
+
+      <!-- Register Form -->
+      <div id="registerForm" class="auth-form hidden">
+        <div class="input-group">
+          <label>FULL NAME</label>
+          <input type="text" id="r_name" placeholder="Enter your name" />
+        </div>
+
+        <div class="input-group">
+          <label>EMAIL ADDRESS</label>
+          <input type="email" id="r_email" placeholder="Enter your email" />
+        </div>
+
+        <div class="input-group">
+          <label>PASSWORD</label>
+          <input type="password" id="r_password" placeholder="Create a password" />
+        </div>
+
+        <button onclick="register()" class="primary-btn auth-btn">Register &rarr;</button>
+        <p class="auth-link">Already have an account? <span onclick="toggleAuth('login')">Sign In</span></p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- MAIN DASHBOARD VIEW (Hidden until login) -->
+  <div id="dashboardView" class="dashboard-container hidden">
+
+    <!-- LEFT SIDEBAR -->
+    <aside class="sidebar">
+      <div class="brand">
+        🏛️ <span style="font-weight: 800; letter-spacing: 1px;">CIVICCONNECT</span>
+        <div style="font-size: 11px; color: #6b7280; margin-top: 5px; font-weight: 400;">Citizen Portal</div>
+      </div>
+
+      <nav class="nav-menu">
+        <div class="nav-item active" onclick="switchTab('dashboard')" id="nav-dashboard">
+          📊 Dashboard
+        </div>
+        <div class="nav-item" onclick="switchTab('complaints')" id="nav-complaints">
+          📋 My Complaints
+        </div>
+        <div class="nav-item" onclick="switchTab('newComplaint')" id="nav-newComplaint">
+          ➕ New Complaint
+        </div>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="sidebar-footer">
+          <div class="user-profile" onclick="toggleProfileMenu()" style="cursor: pointer; position: relative;">
+            <div class="avatar" id="avatarText">A</div>
+            <div class="user-info">
+              <div class="user-name" id="userNameDisplay">abcd</div>
+              <div class="user-role">Citizen</div>
+            </div>
+            <div style="margin-left: auto; color: #8b949e;">⚙️</div>
+          </div>
+
+          <!-- SLIDE UP PROFILE MENU -->
+          <div id="profileMenu" class="profile-menu-popup hidden">
+            <div class="menu-header">
+              <span style="font-size: 14px; color: #8b949e; text-transform: uppercase; font-weight: 700;">Account</span>
+            </div>
+            <div class="menu-item" onclick="showSettings('editProfile')">
+              ✏️ Edit Name & Email
+            </div>
+            <div class="menu-item" onclick="showSettings('resetPassword')">
+              🔒 Reset Password
+            </div>
+            <div class="menu-item" onclick="switchTab('complaints'); toggleProfileMenu()">
+              📋 View My Complaints
+            </div>
+            <div class="menu-divider"></div>
+            <div class="menu-item logout-menu-btn" onclick="logout()">
+              🚪 Log Out
+            </div>
+          </div>
+        </div>
+    </aside>
+
+    <!-- RIGHT CONTENT AREA -->
+    <main class="main-content">
+
+      <!-- Header -->
+      <header class="content-header">
+        <h1>Welcome back, <span id="headerName">abcd</span> 👋</h1>
+        <p style="color: #6b7280; margin-top: 5px; font-size: 14px;">Role: Citizen</p>
+      </header>
+
+      <!-- TAB 1: DASHBOARD STATS -->
+      <div id="tab-dashboard" class="tab-content active-tab">
+        <div class="stats-grid">
+
+          <div class="stat-card stat-blue">
+            <div class="stat-number" id="statTotal" style="color: #3b82f6;">0</div>
+            <div class="stat-label">📄 Total</div>
+          </div>
+
+          <div class="stat-card stat-yellow">
+            <div class="stat-number" id="statPending" style="color: #f59e0b;">0</div>
+            <div class="stat-label">⏳ Pending</div>
+          </div>
+
+          <div class="stat-card stat-purple">
+            <div class="stat-number" id="statActive" style="color: #a855f7;">0</div>
+            <div class="stat-label">🔧 Active</div>
+          </div>
+
+          <div class="stat-card stat-green stat-wide">
+            <div class="stat-number" id="statResolved" style="color: #10b981;">0</div>
+            <div class="stat-label">✅ Resolved</div>
+          </div>
+
+        </div>
+
+        <h3 style="margin-top: 40px; color: #e5e7eb; font-weight: 600;">Recent Complaints</h3>
+        <div id="recentComplaintsList" class="complaints-list-widget">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+
+      <!-- TAB 2: MY COMPLAINTS (Full List) -->
+      <div id="tab-complaints" class="tab-content hidden">
+        <h2 style="color: white; margin-bottom: 20px;">My Complaints History</h2>
+        <div id="fullComplaintsList" class="full-list-container">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+
+      <!-- TAB 3: NEW COMPLAINT FORM -->
+      <div id="tab-newComplaint" class="tab-content hidden">
+        <h2 style="color: white; margin-bottom: 20px;">Report an Issue</h2>
+
+        <div class="form-container">
+          <div class="input-group">
+            <label>Category</label>
+            <select id="c_category">
+              <option value="Road">🚧 Road</option>
+              <option value="Water">💧 Water</option>
+              <option value="Electricity">⚡ Electricity</option>
+              <option value="Garbage">🗑 Garbage</option>
+              <option value="Sanitation">🚽 Sanitation</option>
+              <option value="Parks">🏞️ Parks</option>
+              <option value="Other">❓ Other</option>
+            </select>
+          </div>
+
+          <div class="input-group">
+            <label>Location / Place</label>
+            <input type="text" id="c_place" placeholder="E.g., Chennai Main Road" />
+          </div>
+
+          <div class="input-group">
+            <label>When did it happen? / Description</label>
+            <textarea id="c_desc" placeholder="Provide details about the issue..." rows="3"></textarea>
+          </div>
+
+          <button onclick="submitComplaint()" class="primary-btn" style="width: auto; padding: 10px 30px;">Submit
+            Issue</button>
+
+          <p id="successMessage" class="hidden" style="color: #10b981; font-weight: 600; margin-top: 15px;">
+            ✅ We will finish the work in 1 or 2 days
+          </p>
+        </div>
+      </div>
+
+      <!-- TAB 4: SETTINGS PANEL -->
+      <div id="tab-settings" class="tab-content hidden">
+        <h2 style="color: white; margin-bottom: 20px;">Account Settings</h2>
+
+        <div class="form-container">
+          <!-- Edit Profile -->
+          <div id="editProfileSection">
+            <h3 style="color: white; margin-bottom: 15px;">Edit Profile</h3>
+            <div class="input-group">
+              <label>FULL NAME</label>
+              <input type="text" id="s_name" />
+            </div>
+            <div class="input-group">
+              <label>EMAIL ADDRESS</label>
+              <input type="email" id="s_email" />
+            </div>
+            <button onclick="saveSettings()" class="primary-btn" style="width: auto; padding: 10px 30px;">Save
+              Profile</button>
+          </div>
+
+          <!-- Reset Password Dummy -->
+          <div id="resetPasswordSection" style="margin-top: 40px; border-top: 1px solid #30363d; padding-top: 20px;">
+            <h3 style="color: white; margin-bottom: 15px;">Reset Password</h3>
+            <div class="input-group">
+              <label>NEW PASSWORD</label>
+              <input type="password" placeholder="Enter new password" />
+            </div>
+            <div class="input-group">
+              <label>CONFIRM PASSWORD</label>
+              <input type="password" placeholder="Confirm new password" />
+            </div>
+            <button onclick="alert('Password updated successfully!')" class="primary-btn"
+              style="background-color: #f59e0b; width: auto; padding: 10px 30px;">Update Password</button>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+
+</html>
